@@ -1,0 +1,7 @@
+input 100
+input 102
+raw1 100 102
+output 100
+goto 16
+maxmodminus 100 102
+goto 4

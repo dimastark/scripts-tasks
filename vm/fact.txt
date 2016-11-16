@@ -1,0 +1,7 @@
+input 102
+factor
+raw0 102 100
+output 101 goto 20
+mlp 101 102 101
+minus 102 99 102
+goto 3
