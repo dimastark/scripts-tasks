@@ -50,7 +50,7 @@ for (i = 0; i < result.length; i++) {
 		if (result[i] === "/" && a === 0) {
             throw new Error("Divide by zero");
         }
-		stack.push(eval("parseInt(b)" + result[i] + "parseInt(a)")); // Уязвимость) Мило
+		stack.push(eval("parseInt(b)" + result[i] + "parseInt(start)")); // Уязвимость) Мило
 	}
 }
 
