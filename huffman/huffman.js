@@ -1,201 +1,139 @@
-var fso  = new  ActiveXObject("Scripting.FileSystemObject")                                                                                                                      
-var file = fso.OpenTextFile("enter_file.txt")
-var enter_String = file.ReadAll( )
-file.close()                                         
-var dlin = enter_String.length                                                                            
-var mass_char = new Array()
-var sim
-var flag
-var i=0
-var j
-var index=0
-while(i<dlin)
-{
-    sim = enter_String.charAt(i)
-    flag =0 
-    for(j=0;j<mass_char.length;j++)
-          if (mass_char[j] == sim)
-              {
-                 flag = 1
-                 break
-               }
-     if (flag==0)
-     {
-         mass_char[index]=sim
-         index++
-      }
-     i++
+function readInput() {
+    var fso = new ActiveXObject('Scripting.FileSystemObject');
+    var file = fso.OpenTextFile('input.txt');
+    var input = file.ReadAll();
+    file.close();
+    return input;
 }
 
-var mass_count = new Array(mass_char.length)
-for(i=0;i<mass_char.length;i++)
-    mass_count[i]=0
-
-for(i=0;i<mass_char.length;i++)
-{
-    for(j=0;j<dlin;j++)
-         if (mass_char[i] == enter_String.charAt(j))
-             mass_count[i]++
+function writeFrequences(input, charArray, charCounts) {
+    var out = fso.OpenTextFile('inform.txt', 2, true);
+    out.WriteLine('РСЃС…РѕРґРЅР°СЏ СЃС‚СЂРѕРєР°');
+    out.WriteLine(input);
+    out.WriteLine('РђР»С„Р°РІРёС‚ Рё С‡Р°СЃС‚РѕС‚Р°');
+    for (var i=0; i < charArray.length; i++) {
+        Text.Write(charArray[i] + ' = ' + charCounts[i] + ' ');
+    }
+    out.close();
 }
 
+function writeOut(input, charArray, codes) {
+    var out = fso.OpenTextFile('inform.txt', 2, true);
+    out.WriteLine();
+    out.WriteLine('РљРѕРґС‹ СЃРёРјРІРѕР»РѕРІ:');
 
-for(i=0;i<mass_count.length;i++)
-     for(j=0;j<mass_count.length;j++)
-           if (mass_count[i]<mass_count[j])
-               {
-                  mass_count[i]+=mass_count[j]
-                  mass_count[j] = mass_count[i] - mass_count[j]
-                  mass_count[i] -=mass_count[j]
-                  sim=mass_char[i]
-                  mass_char[i] = mass_char[j]
-                  mass_char[j] = sim
-               }
+    charArray.forEach(function (c, ind) {
+       out.WriteLine(c + ' = ' + codes[ind] + ' ')
+    });
 
-var Text = fso.OpenTextFile("inform.txt", 2, true)
-Text.WriteLine("Исходная строка")
-Text.WriteLine(enter_String)
-Text.WriteLine("Алфавит и частота")
-for(i=0;i<mass_char.length;i++)
-Text.Write(mass_char[i]+"="+mass_count[i] +" ")
+    encoded = input.split('').map(function (c) {
+        return codes[charArray.indexOf(c)];
+    });
 
+    out.WriteLine('Р—Р°РєРѕРґРёСЂРѕРІР°РЅРЅР°СЏ СЃС‚СЂРѕРєР°');
+    out.WriteLine(encoded);
 
-var NameAddres = new Array()
+    var decoded = encoded.split('').map(function (c) {
+        return charArray[codes.indexOf(c)];
+    }).join();
 
-i=0
-j=0
-while(i<mass_char.length)
-{
-      NameAddres[j]=-1
-      NameAddres[j+1]="no"
-     NameAddres[j+2]="no"
-     NameAddres[j+3]=mass_char[i]
-     j+=4
-     i++
+    out.WriteLine('Р Р°СЃРєРѕРґРёСЂРѕРІР°РЅРЅР°СЏ СЃС‚СЂРѕРєР°');
+    out.WriteLine(decoded);
+    out.close();
 }
 
-var index_i
-var index_j
-var min
-var final_min
-var dlin2
-var dlin3 = mass_count.length
-while(mass_count[mass_count.length-1]< dlin)
-{
-   min=0
-    final_min=999999999999
-    for(i=0;i<dlin3;i++)
-      for(j=0;j<dlin3;j++)
-          if ( i!=j && mass_count[i] >0 && mass_count[j] >0)
-              {
-                  min=mass_count[i]+mass_count[j]
-                  if (min<final_min)
-                      {
-                         final_min=min
-                         index_i = i
-                         index_j = j
-                      }
+var input = readInput();
+var splitInput = input.split('');
+var len = input.length;
+var charArray = [];
+
+splitInput.forEach(function (c) {
+    if (charArray.indexOf(c) === -1) {
+        charArray.push(c);
+    }
+});
+
+var charCounts = charArray.map(function (c) {
+    return splitInput.reduce(function (count, char) {
+        return count + (char === c);
+    }, 0);
+});
+
+charCounts.sort(function (a, b) {
+    if (a > b) {
+        var tmp = charArray;
+        charArray[0] = charArray[1];
+        charArray[1] = tmp;
+
+        return 1
+    }
+});
+
+writeFrequences(input, charArray, charCounts);
+
+var nameAddress = [];
+
+charArray.forEach(function (c, ind) {
+    var selections = { 0: -1, 1: 'no', 2: 'no', 3: c };
+    nameAddress[ind] = selections[ind % 4];
+});
+
+var iInd;
+var jInd;
+var charCountsLen = charCounts.length;
+
+while (charCounts[charCountsLen - 1] < len) {
+    var min = Number.MAX_VALUE;
+
+    for (var i = 0; i < charCountsLen; i++) {
+        for (var j = 0; j < charCountsLen; j++) {
+            if (i != j && charCounts[i] > 0 && charCounts[j] > 0) {
+                if (charCounts[i] + charCounts[j] < min) {
+                    min = charCounts[i] + charCounts[j];
+                    iInd = (i + 1) * 4 - 1;
+                    jInd = (j + 1) * 4 - 1
                 }
-         mass_count[dlin3]=final_min
-         dlin3++
-         mass_count[index_i] =-mass_count[index_i]
-         mass_count[index_j]=-mass_count[index_j]
-         index_i = (index_i + 1)*4 -1
-         index_j = (index_j + 1)*4 -1
-         if (NameAddres[index_i].length < NameAddres[index_j].length)
-             {
-                index_i+=index_j
-                index_j = index_i - index_j
-                index_i-=index_j
-             }
-         dlin2 = NameAddres.length
-         NameAddres[dlin2]=-1
-         NameAddres[dlin2+1]= index_i
-         NameAddres[dlin2+2]=index_j
-         NameAddres[dlin2+3] =NameAddres[index_i]+NameAddres[index_j]
-}
-i = NameAddres.length-3
-while(NameAddres[i] !="no")
-{
-   index_i =NameAddres[i]
-   index_j =NameAddres[i+1]
-  NameAddres[index_i -3]=0
-  NameAddres[index_j -3]=1
-  i = i-4
-}
-var mass_kod = new Array()
-var kod
-var l
-var flag
-var sim2
-var linkl
-var sav
-for(i=0;i<mass_char.length;i++)
-{
-  kod=""
-  sim=NameAddres[((i+1)*4 -1)].charAt(0)
-
-
-  
-  kod+=NameAddres[((i+1)*4-4)]
-  for(j=(i+2)*4-1;j<NameAddres.length-4;j+=4)
-{
-   flag =0
-  for(l=0;l<NameAddres[j].length;l++)
-        if (sim==NameAddres[j].charAt(l))
-            {
-           flag=1
             }
- if (flag==1)
-  kod+=NameAddres[j-3]
- }
-sav=''
-linkl=kod.length-1
-while(linkl>=0)
-{
-sav=sav+kod.charAt(linkl)
-linkl=linkl-1
-}
-mass_kod[i] =sav
-}
-Text.WriteLine("")
-Text.WriteLine("Коды символов")
-for(i=0;i<mass_char.length;i++)
-Text.WriteLine(mass_char[i]+"= "+mass_kod[i]+" ")
+        }
+    }
 
-kod=""
-for(i=0;i<enter_String.length;i++)
-{
-   index=-1
-   sim=enter_String.charAt(i)
-   for(j=0;j<mass_char.length;j++)
-       if (sim==mass_char[j])
-          {
-             index=j
-           }
-   kod+=mass_kod[index]
-}
-Text.WriteLine("Закодированная строка")
-Text.WriteLine(kod)
+    charCounts.push(min);
+    charCounts[iInd] = -charCounts[iInd];
+    charCounts[jInd] = -charCounts[jInd];
 
-var newString=""
-i=0
-while(i<kod.length)
-{
-sim=""
-flag=0
-while(flag!=1)
-{
-sim+=kod.charAt(i)
-for(l=0;l<mass_kod.length;l++)
-if(sim==mass_kod[l])
-{
-flag=1
-index=l
-}
-i=i+1
-}
-newString+=mass_char[index]
-}
-Text.WriteLine("Раскодированная строка")
-Text.WriteLine(newString)
+    if (nameAddress[iInd].length < nameAddress[jInd].length) {
+        var tmp = iInd;
+        iInd = jInd;
+        jInd = tmp;
+    }
 
+    nameAddress.push(-1);
+    nameAddress.push(iInd);
+    nameAddress.push(jInd);
+    nameAddress.push(nameAddress[iInd] + nameAddress[jInd]);
+}
+
+var lastAddress = nameAddress.length - 3;
+while(nameAddress[lastAddress] !== 'no') {
+    iInd = nameAddress[lastAddress];
+    jInd = nameAddress[lastAddress + 1];
+    nameAddress[iInd - 3] = 0;
+    nameAddress[jInd - 3] = 1;
+    lastAddress -= 4;
+}
+
+var codes = [];
+for (i = 0; i < charArray.length; i++) {
+    var encoded = nameAddress[((i + 1) * 4 - 4)];
+    var char = nameAddress[((i + 1) * 4 - 1)].charAt(0);
+
+    for (j = (i + 2) * 4 - 1; j < nameAddress.length - 4; j += 4) {
+        if (nameAddress.indexOf(char) !== -1) {
+            encoded += nameAddress[j - 3];
+        }
+    }
+
+    codes.push(encoded.split('').reverse().join());
+}
+
+writeOut(input, charArray, codes);
