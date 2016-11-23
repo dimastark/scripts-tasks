@@ -10,14 +10,14 @@
             <td colspan="5">Введите 4-ех битовое слово:</td>
         </tr>
         <tr>
-            <td colspan="4"><input maxlength="4" type='text' onclick='code()' id='input'/></td>
+            <td colspan="4"><input pattern="[01]{4}" type='text' id='input'/></td>
             <td colspan="1"><input type='button' onclick='code()' value='encode'/></td>
         </tr>
         <tr>
             <td colspan="5">Закодированная строка:</td>
         </tr>
         <tr>
-            <td colspan="2"><input type='text' maxlength="4" id='output'></td>
+            <td colspan="2"><input type='text' pattern="[01]{4}" id='output'></td>
             <td colspan="2"><input type='text' maxlength="4" id='cont' readonly></td>
             <td colspan="1"><input type='button' onclick='decode()' value='decode'></td>
         </tr>
