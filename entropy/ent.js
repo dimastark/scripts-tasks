@@ -1,5 +1,5 @@
 var FSO = new ActiveXObject("Scripting.FileSystemObject");  
-t = FSO.OpenTextFile("¬‚Ó‰.txt");
+t = FSO.OpenTextFile("–í–≤–æ–¥.txt");
 var str = t.ReadAll()
 t.close();
 entrop=0;
